@@ -1,0 +1,27 @@
+buildscript {
+    ext.kotlin_version = "1.4.21-2"
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        def gradle = '7.2.0-rc02'
+        classpath "com.android.tools.build:gradle:$gradle"
+
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        def hilt = '2.40.1'
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
