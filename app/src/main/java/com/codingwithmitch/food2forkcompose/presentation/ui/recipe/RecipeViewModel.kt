@@ -11,20 +11,23 @@ import androidx.lifecycle.viewModelScope
 import com.codingwithmitch.food2forkcompose.domain.model.Recipe
 import com.codingwithmitch.food2forkcompose.repository.RecipeRepository
 import com.codingwithmitch.food2forkcompose.util.TAG
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import javax.inject.Named
 
 const val STATE_KEY_RECIPE = "recipe.state.recipe.key"
 
 @ExperimentalCoroutinesApi
+@HiltViewModel
 class RecipeViewModel
-@ViewModelInject
+@Inject
 constructor(
     private val recipeRepository: RecipeRepository,
     private @Named("auth_token") val token: String,
-    @Assisted private val state: SavedStateHandle,
+    @Assisted val savedStateHandle: SavedStateHandle
 ): ViewModel(){
 
     val recipe: MutableState<Recipe?> = mutableStateOf(null)
@@ -33,7 +36,7 @@ constructor(
 
     init {
         // restore if process dies
-        state.get<Int>(STATE_KEY_RECIPE)?.let{ recipeId ->
+        savedStateHandle.get<Int>(STATE_KEY_RECIPE)?.let{ recipeId ->
             onTriggerEvent(RecipeEvent.GetRecipeEvent(recipeId))
         }
     }
@@ -64,7 +67,7 @@ constructor(
         val recipe = recipeRepository.get(token=token, id=id)
         this.recipe.value = recipe
 
-        state.set(STATE_KEY_RECIPE, recipe.id)
+        savedStateHandle.set(STATE_KEY_RECIPE, recipe.id)
 
         loading.value = false
     }
